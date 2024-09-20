@@ -31,12 +31,18 @@ class SessionCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    name,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  // Limiter le texte du nom à une seule ligne et ajouter "..." s'il dépasse la limite
+                  Expanded(
+                    child: Text(
+                      name,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      overflow: TextOverflow.ellipsis, // Ajoute "..."
+                      maxLines: 1, // Limite à une seule ligne
+                    ),
                   ),
+                  const SizedBox(width: 10), // Espacement entre le nom et la date
                   Text(
                     formattedDate,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
