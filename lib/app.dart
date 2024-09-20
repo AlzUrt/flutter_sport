@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: ChangeNotifierProvider(
         create: (context) => NavigationProvider(),
-        child: const MainScreen(),
+        child: MainScreen(),
       ),
     );
   }
@@ -22,13 +22,13 @@ class MyApp extends StatelessWidget {
 
 class MainScreen extends StatelessWidget {
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
+  final List<Widget> _screens = [
+    const HomeScreen(),
     ExercicesScreen(),
-    ProfileScreen(),
+    const ProfileScreen(),
   ];
 
-  const MainScreen({super.key});
+  MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

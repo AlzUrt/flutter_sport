@@ -1,30 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../domain/exercice.dart';
+import '../providers/exercices_provider.dart';
 
-class ExercicesScreen extends StatefulWidget {
-  const ExercicesScreen({super.key});
+class ExercicesScreen extends StatelessWidget {
 
-  @override
-  _ExercicesScreenState createState() => _ExercicesScreenState();
-}
-
-class _ExercicesScreenState extends State<ExercicesScreen> {
-  final List<Exercice> _exercices = [];
   final ImagePicker _picker = ImagePicker();
 
-  void _addExercice(Exercice exercice) {
-    setState(() {
-      _exercices.add(exercice);
-    });
-  }
-
-  void _deleteExercice(int index) {
-    setState(() {
-      _exercices.removeAt(index);
-    });
-  }
+  ExercicesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,61 +17,39 @@ class _ExercicesScreenState extends State<ExercicesScreen> {
       appBar: AppBar(
         title: const Text('Exercices'),
       ),
-      body: ListView.builder(
-        itemCount: _exercices.length,
-        itemBuilder: (context, index) {
-          final exercice = _exercices[index];
-          return Dismissible(
-            key: Key(exercice.name + index.toString()),
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
-              child: const Icon(Icons.delete, color: Colors.white),
-            ),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) {
-              _deleteExercice(index);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${exercice.name} supprimé'))
-              );
-            },
-            child: ListTile(
-              title: Text(exercice.name),
-              leading: exercice.isCustomImage
-                ? Image.file(File(exercice.imagePath), width: 50, height: 50)
-                : Image.asset(exercice.imagePath, width: 50, height: 50),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Confirmer la suppression'),
-                        content: Text('Êtes-vous sûr de vouloir supprimer ${exercice.name} ?'),
-                        actions: [
-                          TextButton(
-                            child: const Text('Annuler'),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                          TextButton(
-                            child: const Text('Supprimer'),
-                            onPressed: () {
-                              _deleteExercice(index);
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('${exercice.name} supprimé'))
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
+      body: Consumer<ExercicesProvider>(
+        builder: (context, exercicesProvider, child) {
+          return ListView.builder(
+            itemCount: exercicesProvider.exercices.length,
+            itemBuilder: (context, index) {
+              final exercice = exercicesProvider.exercices[index];
+              return Dismissible(
+                key: Key(exercice.name + index.toString()),
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  exercicesProvider.deleteExercice(index);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${exercice.name} supprimé'))
                   );
                 },
-              ),
-            ),
+                child: ListTile(
+                  title: Text(exercice.name),
+                  leading: exercice.isCustomImage
+                    ? Image.file(File(exercice.imagePath), width: 50, height: 50)
+                    : Image.asset(exercice.imagePath, width: 50, height: 50),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _showDeleteConfirmationDialog(context, exercicesProvider, index, exercice.name),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -94,6 +57,34 @@ class _ExercicesScreenState extends State<ExercicesScreen> {
         onPressed: () => _showAddExerciceForm(context),
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, ExercicesProvider provider, int index, String exerciceName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmer la suppression'),
+          content: Text('Êtes-vous sûr de vouloir supprimer $exerciceName ?'),
+          actions: [
+            TextButton(
+              child: const Text('Annuler'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('Supprimer'),
+              onPressed: () {
+                provider.deleteExercice(index);
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$exerciceName supprimé'))
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -185,11 +176,12 @@ class _ExercicesScreenState extends State<ExercicesScreen> {
                   child: const Text('Ajouter'),
                   onPressed: () {
                     if (name.isNotEmpty && (selectedImageIndex != null || customImagePath != null)) {
-                      _addExercice(Exercice(
+                      final newExercice = Exercice(
                         name: name, 
                         imageIndex: selectedImageIndex, 
                         customImagePath: customImagePath
-                      ));
+                      );
+                      Provider.of<ExercicesProvider>(context, listen: false).addExercice(newExercice);
                       Navigator.of(context).pop();
                     }
                   },
