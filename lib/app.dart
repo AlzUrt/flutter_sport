@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/navigation_provider.dart';
+import 'Providers/navigation_provider.dart';
+import 'providers/seances_provider.dart';
+import 'providers/exercices_provider.dart';
 import 'screens/home_screen.dart';
-import 'screens/profile_screen.dart';
 import 'screens/exercices_screen.dart';
+import 'screens/seances_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
+  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ChangeNotifierProvider(
-        create: (context) => NavigationProvider(),
-        child: MainScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => NavigationProvider()),
+        ChangeNotifierProvider(create: (context) => ExercicesProvider()),
+        ChangeNotifierProvider(create: (context) => SeancesProvider()),
+      ],
+      child: MaterialApp(
+        home: MainScreen(),
       ),
     );
   }
@@ -25,7 +31,7 @@ class MainScreen extends StatelessWidget {
   final List<Widget> _screens = [
     const HomeScreen(),
     ExercicesScreen(),
-    const ProfileScreen(),
+    const SeancesScreen(),
   ];
 
   MainScreen({super.key});
@@ -49,8 +55,8 @@ class MainScreen extends StatelessWidget {
                 label: 'Exercices',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profil',
+                icon: Icon(Icons.schedule),
+                label: 'Séances',
               ),
             ],
           ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class Exercice {
   final String name;
   final int? imageIndex;
