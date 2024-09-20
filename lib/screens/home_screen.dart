@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sport/widgets/custom_button.dart';
+import 'package:sport/widgets/session_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -7,15 +8,21 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CustomButton(
-        text: 'Cliquez ici',
-        color: Colors.red,
-        width: 250,
-        height: 60,
-        onPressed: () {
-          // print('Bouton cliqué !');
-        },
-      ),
+      child: Column(
+        children: [
+          SessionCard(name: 'name', date: DateTime.utc(1989, 11, 9)),
+          CustomButton(
+            text: 'Cliquez ici',
+            color: Colors.red,
+            width: 250,
+            height: 60,
+            onPressed: () {
+              print('Bouton cliqué !');
+            },
+          ),
+          
+        ],
+      )
     );
   }
 }
