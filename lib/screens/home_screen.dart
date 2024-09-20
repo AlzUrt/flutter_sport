@@ -12,8 +12,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           SessionCard(name: 'name', date: DateTime.utc(1989, 11, 9)),
           CustomButton(
-            text: 'Cliquez ici',
-            color: Colors.red,
+            text: 'Ajouter une séance',
             width: 250,
             height: 60,
             onPressed: () {
