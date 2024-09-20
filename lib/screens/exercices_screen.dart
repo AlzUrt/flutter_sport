@@ -4,7 +4,7 @@ import 'dart:io';
 import '../domain/exercice.dart';
 
 class ExercicesScreen extends StatefulWidget {
-  const ExercicesScreen({Key? key}) : super(key: key);
+  const ExercicesScreen({super.key});
 
   @override
   _ExercicesScreenState createState() => _ExercicesScreenState();
@@ -20,6 +20,12 @@ class _ExercicesScreenState extends State<ExercicesScreen> {
     });
   }
 
+  void _deleteExercice(int index) {
+    setState(() {
+      _exercices.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,11 +36,57 @@ class _ExercicesScreenState extends State<ExercicesScreen> {
         itemCount: _exercices.length,
         itemBuilder: (context, index) {
           final exercice = _exercices[index];
-          return ListTile(
-            title: Text(exercice.name),
-            leading: exercice.isCustomImage
-              ? Image.file(File(exercice.imagePath), width: 50, height: 50)
-              : Image.asset(exercice.imagePath, width: 50, height: 50),
+          return Dismissible(
+            key: Key(exercice.name + index.toString()),
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(Icons.delete, color: Colors.white),
+            ),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) {
+              _deleteExercice(index);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${exercice.name} supprimé'))
+              );
+            },
+            child: ListTile(
+              title: Text(exercice.name),
+              leading: exercice.isCustomImage
+                ? Image.file(File(exercice.imagePath), width: 50, height: 50)
+                : Image.asset(exercice.imagePath, width: 50, height: 50),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Confirmer la suppression'),
+                        content: Text('Êtes-vous sûr de vouloir supprimer ${exercice.name} ?'),
+                        actions: [
+                          TextButton(
+                            child: const Text('Annuler'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          TextButton(
+                            child: const Text('Supprimer'),
+                            onPressed: () {
+                              _deleteExercice(index);
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('${exercice.name} supprimé'))
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
           );
         },
       ),
