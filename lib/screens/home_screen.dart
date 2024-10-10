@@ -18,6 +18,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
+  bool _isRecurring = false;
+  int _selectedWeekday = DateTime.now().weekday;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -84,46 +87,126 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         Seance? selectedSeance;
-        return AlertDialog(
-          title: Text('Ajouter une séance'),
-          content: Consumer<SeancesProvider>(
-            builder: (context, seancesProvider, child) {
-              return DropdownButton<Seance>(
-                value: selectedSeance,
-                hint: Text('Sélectionner une séance'),
-                items: seancesProvider.seances.map((Seance seance) {
-                  return DropdownMenuItem<Seance>(
-                    value: seance,
-                    child: Text(seance.nom),
-                  );
-                }).toList(),
-                onChanged: (Seance? newValue) {
-                  setState(() {
-                    selectedSeance = newValue;
-                  });
-                },
-              );
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Annuler'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Ajouter'),
-              onPressed: () {
-                if (selectedSeance != null) {
-                  Provider.of<CalendarProvider>(context, listen: false).addEvent(
-                    CalendarEvent(date: _selectedDay, seance: selectedSeance!)
-                  );
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Ajouter une séance'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Consumer<SeancesProvider>(
+                      builder: (context, seancesProvider, child) {
+                        return DropdownButton<Seance>(
+                          value: selectedSeance,
+                          hint: Text('Sélectionner une séance'),
+                          items: seancesProvider.seances.map((Seance seance) {
+                            return DropdownMenuItem<Seance>(
+                              value: seance,
+                              child: Text(seance.nom),
+                            );
+                          }).toList(),
+                          onChanged: (Seance? newValue) {
+                            setState(() {
+                              selectedSeance = newValue;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Text('Récurrent: '),
+                        Switch(
+                          value: _isRecurring,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _isRecurring = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    if (_isRecurring)
+                      DropdownButton<int>(
+                        value: _selectedWeekday,
+                        items: [
+                          DropdownMenuItem(child: Text('Lundi'), value: DateTime.monday),
+                          DropdownMenuItem(child: Text('Mardi'), value: DateTime.tuesday),
+                          DropdownMenuItem(child: Text('Mercredi'), value: DateTime.wednesday),
+                          DropdownMenuItem(child: Text('Jeudi'), value: DateTime.thursday),
+                          DropdownMenuItem(child: Text('Vendredi'), value: DateTime.friday),
+                          DropdownMenuItem(child: Text('Samedi'), value: DateTime.saturday),
+                          DropdownMenuItem(child: Text('Dimanche'), value: DateTime.sunday),
+                        ],
+                        onChanged: (int? newValue) {
+                          setState(() {
+                            _selectedWeekday = newValue!;
+                          });
+                        },
+                      )
+                    else
+                      Row(
+                        children: [
+                          Text('Date: ${_selectedDate.toString().split(' ')[0]}'),
+                          IconButton(
+                            icon: Icon(Icons.calendar_today),
+                            onPressed: () async {
+                              final DateTime? picked = await showDatePicker(
+                                context: context,
+                                initialDate: _selectedDate,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2101),
+                              );
+                              if (picked != null && picked != _selectedDate) {
+                                setState(() {
+                                  _selectedDate = picked;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Annuler'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Ajouter'),
+                  onPressed: () {
+                    if (selectedSeance != null) {
+                      if (_isRecurring) {
+                        // Ajouter un événement récurrent
+                        for (int i = 0; i < 52; i++) { // Ajouter pour une année
+                          DateTime eventDate = _selectedDate.add(Duration(days: i * 7));
+                          while (eventDate.weekday != _selectedWeekday) {
+                            eventDate = eventDate.add(Duration(days: 1));
+                          }
+                          Provider.of<CalendarProvider>(context, listen: false).addEvent(
+                            CalendarEvent(date: eventDate, seance: selectedSeance!)
+                          );
+                        }
+                      } else {
+                        // Ajouter un événement unique
+                        Provider.of<CalendarProvider>(context, listen: false).addEvent(
+                          CalendarEvent(date: _selectedDate, seance: selectedSeance!)
+                        );
+                      }
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
