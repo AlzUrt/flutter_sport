@@ -1,4 +1,4 @@
-class Exercice {
+class Exercise {
   final int? id;
   final String name;
   final int? imageIndex;
@@ -9,10 +9,10 @@ class Exercice {
   final int series;
   final Duration pauseEntreSeries;
 
-  Exercice({
+  Exercise({
     this.id,
-    required this.name, 
-    this.imageIndex, 
+    required this.name,
+    this.imageIndex,
     this.customImagePath,
     required this.isTemps,
     this.temps,
@@ -21,8 +21,8 @@ class Exercice {
     required this.pauseEntreSeries,
   });
 
-  String get imagePath => 
-    customImagePath ?? 'assets/images/exercise${imageIndex ?? 1}.webp';
+  String get imagePath =>
+      customImagePath ?? 'assets/images/exercise${imageIndex ?? 1}.webp';
 
   bool get isCustomImage => customImagePath != null;
 
@@ -40,8 +40,8 @@ class Exercice {
     };
   }
 
-  factory Exercice.fromMap(Map<String, dynamic> map) {
-    return Exercice(
+  factory Exercise.fromMap(Map<String, dynamic> map) {
+    return Exercise(
       id: map['id'],
       name: map['name'],
       imageIndex: map['imageIndex'],
@@ -54,7 +54,7 @@ class Exercice {
     );
   }
 
-  Exercice copyWith({
+  Exercise copyWith({
     int? id,
     String? name,
     int? imageIndex,
@@ -65,7 +65,7 @@ class Exercice {
     int? series,
     Duration? pauseEntreSeries,
   }) {
-    return Exercice(
+    return Exercise(
       id: id ?? this.id,
       name: name ?? this.name,
       imageIndex: imageIndex ?? this.imageIndex,
@@ -80,6 +80,6 @@ class Exercice {
 
   @override
   String toString() {
-    return 'Exercice(id: $id, name: $name, isTemps: $isTemps, temps: $temps, repetitions: $repetitions, series: $series)';
+    return 'Exercise(id: $id, name: $name, isTemps: $isTemps, temps: $temps, repetitions: $repetitions, series: $series)';
   }
 }

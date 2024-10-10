@@ -17,7 +17,9 @@ class CalendarProvider with ChangeNotifier {
   }
 
   void removeFutureEvents(CalendarEvent event) {
-    _events.removeWhere((e) => e.seance == event.seance && (e.date.isAfter(event.date) || isSameDay(e.date, event.date)));
+    _events.removeWhere((e) =>
+        e.session == event.session &&
+        (e.date.isAfter(event.date) || isSameDay(e.date, event.date)));
     notifyListeners();
   }
 

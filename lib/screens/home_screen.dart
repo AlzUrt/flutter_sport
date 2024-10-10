@@ -4,9 +4,9 @@ import 'package:sport/widgets/custom_button.dart';
 import 'package:sport/widgets/session_card.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:sport/providers/calendar_provider.dart';
-import 'package:sport/providers/seances_provider.dart';
+import 'package:sport/providers/sessions_provider.dart';
 import 'package:sport/domain/calendar_event.dart';
-import 'package:sport/domain/seance.dart';
+import 'package:sport/domain/session.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,30 +52,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            
             const SizedBox(height: 20),
-            
             Consumer<CalendarProvider>(
               builder: (context, calendarProvider, child) {
-                final eventsForSelectedDay = calendarProvider.getEventsForDay(_selectedDay);
+                final eventsForSelectedDay =
+                    calendarProvider.getEventsForDay(_selectedDay);
                 return Column(
                   children: eventsForSelectedDay.isEmpty
-                    ? [SessionCard(name: 'Aucune séance pour ce jour', date: _selectedDay)]
-                    : eventsForSelectedDay.map((event) => 
-                        SessionCard(
-                          name: event.seance.nom, 
-                          date: event.date,
-                          onDelete: () {
-                            _showDeleteConfirmationDialog(context, event);
-                          },
-                        ),
-                      ).toList(),
+                      ? [
+                          SessionCard(
+                              name: 'Aucune séance pour ce jour',
+                              date: _selectedDay)
+                        ]
+                      : eventsForSelectedDay
+                          .map(
+                            (event) => SessionCard(
+                              name: event.session.nom,
+                              date: event.date,
+                              onDelete: () {
+                                _showDeleteConfirmationDialog(context, event);
+                              },
+                            ),
+                          )
+                          .toList(),
                 );
               },
             ),
-
             const SizedBox(height: 20),
-
             CustomButton(
               text: 'Ajouter une séance',
               width: 250,
@@ -94,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        Seance? selectedSeance;
+        Session? selectedSession;
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
@@ -103,20 +106,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Consumer<SeancesProvider>(
-                      builder: (context, seancesProvider, child) {
-                        return DropdownButton<Seance>(
-                          value: selectedSeance,
+                    Consumer<SessionsProvider>(
+                      builder: (context, sessionsProvider, child) {
+                        return DropdownButton<Session>(
+                          value: selectedSession,
                           hint: const Text('Sélectionner une séance'),
-                          items: seancesProvider.seances.map((Seance seance) {
-                            return DropdownMenuItem<Seance>(
-                              value: seance,
-                              child: Text(seance.nom),
+                          items:
+                              sessionsProvider.sessions.map((Session session) {
+                            return DropdownMenuItem<Session>(
+                              value: session,
+                              child: Text(session.nom),
                             );
                           }).toList(),
-                          onChanged: (Seance? newValue) {
+                          onChanged: (Session? newValue) {
                             setState(() {
-                              selectedSeance = newValue;
+                              selectedSession = newValue;
                             });
                           },
                         );
@@ -141,13 +145,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       DropdownButton<int>(
                         value: _selectedWeekday,
                         items: const [
-                          DropdownMenuItem(child: Text('Lundi'), value: DateTime.monday),
-                          DropdownMenuItem(child: Text('Mardi'), value: DateTime.tuesday),
-                          DropdownMenuItem(child: Text('Mercredi'), value: DateTime.wednesday),
-                          DropdownMenuItem(child: Text('Jeudi'), value: DateTime.thursday),
-                          DropdownMenuItem(child: Text('Vendredi'), value: DateTime.friday),
-                          DropdownMenuItem(child: Text('Samedi'), value: DateTime.saturday),
-                          DropdownMenuItem(child: Text('Dimanche'), value: DateTime.sunday),
+                          DropdownMenuItem(
+                              child: Text('Lundi'), value: DateTime.monday),
+                          DropdownMenuItem(
+                              child: Text('Mardi'), value: DateTime.tuesday),
+                          DropdownMenuItem(
+                              child: Text('Mercredi'),
+                              value: DateTime.wednesday),
+                          DropdownMenuItem(
+                              child: Text('Jeudi'), value: DateTime.thursday),
+                          DropdownMenuItem(
+                              child: Text('Vendredi'), value: DateTime.friday),
+                          DropdownMenuItem(
+                              child: Text('Samedi'), value: DateTime.saturday),
+                          DropdownMenuItem(
+                              child: Text('Dimanche'), value: DateTime.sunday),
                         ],
                         onChanged: (int? newValue) {
                           setState(() {
@@ -158,7 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     else
                       Row(
                         children: [
-                          Text('Date: ${_selectedDate.toString().split(' ')[0]}'),
+                          Text(
+                              'Date: ${_selectedDate.toString().split(' ')[0]}'),
                           IconButton(
                             icon: const Icon(Icons.calendar_today),
                             onPressed: () async {
@@ -191,21 +204,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextButton(
                   child: const Text('Ajouter'),
                   onPressed: () {
-                    if (selectedSeance != null) {
+                    if (selectedSession != null) {
                       if (_isRecurring) {
                         for (int i = 0; i < 52; i++) {
-                          DateTime eventDate = _selectedDate.add(Duration(days: i * 7));
+                          DateTime eventDate =
+                              _selectedDate.add(Duration(days: i * 7));
                           while (eventDate.weekday != _selectedWeekday) {
                             eventDate = eventDate.add(const Duration(days: 1));
                           }
-                          Provider.of<CalendarProvider>(context, listen: false).addEvent(
-                            CalendarEvent(date: eventDate, seance: selectedSeance!)
-                          );
+                          Provider.of<CalendarProvider>(context, listen: false)
+                              .addEvent(CalendarEvent(
+                                  date: eventDate, session: selectedSession!));
                         }
                       } else {
-                        Provider.of<CalendarProvider>(context, listen: false).addEvent(
-                          CalendarEvent(date: _selectedDate, seance: selectedSeance!)
-                        );
+                        Provider.of<CalendarProvider>(context, listen: false)
+                            .addEvent(CalendarEvent(
+                                date: _selectedDate,
+                                session: selectedSession!));
                       }
                       Navigator.of(context).pop();
                     }
@@ -219,13 +234,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, CalendarEvent event) {
+  void _showDeleteConfirmationDialog(
+      BuildContext context, CalendarEvent event) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Supprimer séance'),
-          content: const Text('Voulez-vous supprimer uniquement cette séance ou toutes les séances futures ?'),
+          content: const Text(
+              'Voulez-vous supprimer uniquement cette séance ou toutes les séances futures ?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Annuler'),
@@ -236,14 +253,16 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               child: const Text('Supprimer uniquement'),
               onPressed: () {
-                Provider.of<CalendarProvider>(context, listen: false).removeEvent(event);
+                Provider.of<CalendarProvider>(context, listen: false)
+                    .removeEvent(event);
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Supprimer toutes les séances futures'),
               onPressed: () {
-                Provider.of<CalendarProvider>(context, listen: false).removeFutureEvents(event);
+                Provider.of<CalendarProvider>(context, listen: false)
+                    .removeFutureEvents(event);
                 Navigator.of(context).pop();
               },
             ),

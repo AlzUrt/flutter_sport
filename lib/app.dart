@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Providers/navigation_provider.dart';
-import 'providers/seances_provider.dart';
+import 'providers/sessions_provider.dart';
 import 'providers/calendar_provider.dart';
-import 'providers/exercices_provider.dart';
+import 'providers/exercises_provider.dart';
 import 'package:sport/config/custom_themes.dart';
 import 'package:sport/screens/setting_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/exercices_screen.dart';
+import 'screens/exercises_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'screens/seances_screen.dart';
+import 'screens/sessions_screen.dart';
 
 class ThemeProvider with ChangeNotifier {
   ThemeData _currentTheme = CustomThemes.blueTheme;
@@ -25,14 +25,13 @@ class ThemeProvider with ChangeNotifier {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => NavigationProvider()),
-        ChangeNotifierProvider(create: (context) => ExercicesProvider()),
-        ChangeNotifierProvider(create: (context) => SeancesProvider()),
+        ChangeNotifierProvider(create: (context) => ExercisesProvider()),
+        ChangeNotifierProvider(create: (context) => SessionsProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CalendarProvider()),
       ],
@@ -40,14 +39,13 @@ class MyApp extends StatelessWidget {
         builder: (context, themeProvider, child) {
           return MaterialApp(
             localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [
-        const Locale('fr'), // Ajouter le français
-      ],
-
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: [
+              const Locale('fr'), // Ajouter le français
+            ],
             debugShowCheckedModeBanner: false,
             theme: themeProvider.currentTheme,
             home: MainScreen(),
@@ -59,11 +57,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatelessWidget {
-
   final List<Widget> _screens = [
     const HomeScreen(),
-    ExercicesScreen(),
-    const SeancesScreen(),
+    ExercisesScreen(),
+    const SessionsScreen(),
     const SettingScreen(),
   ];
 
@@ -78,7 +75,6 @@ class MainScreen extends StatelessWidget {
             title: const Text('SportApp'),
           ),
           body: _screens[navigationProvider.currentIndex],
-          
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: navigationProvider.currentIndex,
@@ -90,7 +86,7 @@ class MainScreen extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.fitness_center),
-                label: 'Exercices',
+                label: 'Exercises',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.workspace_premium_sharp),
