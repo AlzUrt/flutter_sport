@@ -4,7 +4,6 @@ import 'package:sport/domain/exercice.dart';
 import '../providers/seances_provider.dart';
 import '../providers/exercices_provider.dart';
 import '../domain/seance.dart';
-import 'package:reorderables/reorderables.dart';
 class SeancesScreen extends StatelessWidget {
   const SeancesScreen({super.key});
 
@@ -132,7 +131,7 @@ class SeancesScreen extends StatelessWidget {
     );
   }
 
-   void _showAddExercicesToSeanceForm(BuildContext context, ExercicesProvider exercicesProvider, Function(List<Exercice>) onUpdate) {
+     void _showAddExercicesToSeanceForm(BuildContext context, ExercicesProvider exercicesProvider, Function(List<Exercice>) onUpdate) {
     List<Exercice> selectedExercices = [];
 
     showDialog(
@@ -167,21 +166,39 @@ class SeancesScreen extends StatelessWidget {
                       ),
                     ),
                     const Divider(),
-                    const Text('Exercices sélectionnés (glisser pour réordonner):'),
+                    const Text('Exercices sélectionnés (glisser "=" pour réordonner):'),
                     Expanded(
-                      child: ReorderableColumn(
-                        children: selectedExercices.map((exercice) => Card(
-                          key: ValueKey(exercice),
-                          child: ListTile(
-                            title: Text(exercice.name),
-                            trailing: ReorderableDragStartListener(
-                              index: selectedExercices.indexOf(exercice),
-                              child: const Icon(Icons.drag_handle),
+                      child: ReorderableListView.builder(
+                        itemCount: selectedExercices.length,
+                        itemBuilder: (context, index) {
+                          final exercice = selectedExercices[index];
+                          return Card(
+                            key: ValueKey(exercice),
+                            child: ListTile(
+                              title: Text(exercice.name),
+                              trailing: ReorderableDragStartListener(
+                                index: index,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onPanUpdate: (details) {
+                                    // Cette fonction sera appelée lors du glissement
+                                  },
+                                  child: Container(
+                                    width: 60, // Largeur de la zone de drag
+                                    height: 60, // Hauteur de la zone de drag
+                                    alignment: Alignment.center,
+                                    child: const Icon(Icons.drag_handle),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        )).toList(),
+                          );
+                        },
                         onReorder: (int oldIndex, int newIndex) {
                           setState(() {
+                            if (oldIndex < newIndex) {
+                              newIndex -= 1;
+                            }
                             final Exercice item = selectedExercices.removeAt(oldIndex);
                             selectedExercices.insert(newIndex, item);
                           });
