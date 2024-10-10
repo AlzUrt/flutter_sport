@@ -1,16 +1,12 @@
-# sport
+# instructions
 
-A new Flutter project.
+page 185 : https://eduservices.sharepoint.com/:p:/r/sites/MBA2DveloppeurFullStack_MDS_Annecy_24-25/_layouts/15/Doc2.aspx?action=edit&sourcedoc=%7Bca81c90d-c43e-49e5-a2ef-1d8668a9652c%7D&wdOrigin=TEAMS-WEB.teamsSdk_ns.rwc&wdExp=TEAMS-TREATMENT&wdhostclicktime=1728541662075&web=1
 
-## Getting Started
+## start project
 
-This project is a starting point for a Flutter application.
+running device in android studio
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+start project
+```
+flutter run
+```
