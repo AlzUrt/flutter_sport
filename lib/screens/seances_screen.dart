@@ -4,7 +4,7 @@ import 'package:sport/domain/exercice.dart';
 import '../providers/seances_provider.dart';
 import '../providers/exercices_provider.dart';
 import '../domain/seance.dart';
-
+import 'package:reorderables/reorderables.dart';
 class SeancesScreen extends StatelessWidget {
   const SeancesScreen({super.key});
 
@@ -144,7 +144,7 @@ class SeancesScreen extends StatelessWidget {
               title: const Text('Gérer les exercices de la séance'),
               content: Container(
                 width: double.maxFinite,
-                height: 400, // Hauteur fixe pour le dialogue
+                height: 400,
                 child: Column(
                   children: [
                     Expanded(
@@ -169,21 +169,19 @@ class SeancesScreen extends StatelessWidget {
                     const Divider(),
                     const Text('Exercices sélectionnés (glisser pour réordonner):'),
                     Expanded(
-                      child: ReorderableListView.builder(
-                        itemCount: selectedExercices.length,
-                        itemBuilder: (context, index) {
-                          final exercice = selectedExercices[index];
-                          return ListTile(
-                            key: ValueKey(exercice),
+                      child: ReorderableColumn(
+                        children: selectedExercices.map((exercice) => Card(
+                          key: ValueKey(exercice),
+                          child: ListTile(
                             title: Text(exercice.name),
-                            trailing: const Icon(Icons.drag_handle),
-                          );
-                        },
-                        onReorder: (oldIndex, newIndex) {
+                            trailing: ReorderableDragStartListener(
+                              index: selectedExercices.indexOf(exercice),
+                              child: const Icon(Icons.drag_handle),
+                            ),
+                          ),
+                        )).toList(),
+                        onReorder: (int oldIndex, int newIndex) {
                           setState(() {
-                            if (oldIndex < newIndex) {
-                              newIndex -= 1;
-                            }
                             final Exercice item = selectedExercices.removeAt(oldIndex);
                             selectedExercices.insert(newIndex, item);
                           });
