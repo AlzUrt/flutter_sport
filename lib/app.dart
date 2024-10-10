@@ -69,6 +69,7 @@ class MainScreen extends StatelessWidget {
           body: _screens[navigationProvider.currentIndex],
           
           bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             currentIndex: navigationProvider.currentIndex,
             onTap: (index) => navigationProvider.setIndex(index),
             items: const [
