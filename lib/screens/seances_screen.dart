@@ -42,7 +42,7 @@ class SeancesScreen extends StatelessWidget {
     final exercicesProvider = Provider.of<ExercicesProvider>(context, listen: false);
     
     String nom = '';
-    List<Exercice> exercicesSeance = [];
+    List<Exercice> selectedExercices = [];
     Duration pauseEntreExercices = Duration.zero;
     SeanceType type = SeanceType.AMRAP;
 
@@ -63,15 +63,20 @@ class SeancesScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () => _showAddExercicesToSeanceForm(context, exercicesProvider, (newExercices) {
-                        setState(() {
-                          exercicesSeance = newExercices;
-                        });
-                      }),
+                      onPressed: () => _showAddExercicesToSeanceForm(
+                        context, 
+                        exercicesProvider, 
+                        selectedExercices,
+                        (updatedExercices) {
+                          setState(() {
+                            selectedExercices = updatedExercices;
+                          });
+                        }
+                      ),
                       child: const Text('Gérer les exercices'),
                     ),
                     const SizedBox(height: 10),
-                    Text('Exercices ajoutés: ${exercicesSeance.length}'),
+                    Text('Exercices ajoutés: ${selectedExercices.length}'),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<SeanceType>(
                       value: type,
@@ -112,10 +117,10 @@ class SeancesScreen extends StatelessWidget {
                 TextButton(
                   child: const Text('Créer'),
                   onPressed: () {
-                    if (nom.isNotEmpty && exercicesSeance.isNotEmpty) {
+                    if (nom.isNotEmpty && selectedExercices.isNotEmpty) {
                       final newSeance = Seance(
                         nom: nom,
-                        exercices: exercicesSeance,
+                        exercices: selectedExercices,
                         type: type,
                       );
                       Provider.of<SeancesProvider>(context, listen: false).addSeance(newSeance);
@@ -131,10 +136,15 @@ class SeancesScreen extends StatelessWidget {
     );
   }
 
-     void _showAddExercicesToSeanceForm(BuildContext context, ExercicesProvider exercicesProvider, Function(List<Exercice>) onUpdate) {
-    List<Exercice> selectedExercices = [];
+void _showAddExercicesToSeanceForm(
+    BuildContext context, 
+    ExercicesProvider exercicesProvider, 
+    List<Exercice> initialSelectedExercices,
+    Function(List<Exercice>) onUpdate
+  ) {
+    List<Exercice> selectedExercices = List.from(initialSelectedExercices);
 
-    showDialog(
+     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
@@ -184,8 +194,8 @@ class SeancesScreen extends StatelessWidget {
                                     // Cette fonction sera appelée lors du glissement
                                   },
                                   child: Container(
-                                    width: 60, // Largeur de la zone de drag
-                                    height: 60, // Hauteur de la zone de drag
+                                    width: 60,
+                                    height: 60,
                                     alignment: Alignment.center,
                                     child: const Icon(Icons.drag_handle),
                                   ),
