@@ -6,7 +6,6 @@ import '../domain/exercice.dart';
 import '../providers/exercices_provider.dart';
 
 class ExercicesScreen extends StatelessWidget {
-
   final ImagePicker _picker = ImagePicker();
 
   ExercicesScreen({super.key});
@@ -88,10 +87,15 @@ class ExercicesScreen extends StatelessWidget {
     );
   }
 
-  void _showAddExerciceForm(BuildContext context) {
+   void _showAddExerciceForm(BuildContext context) {
     String name = '';
     int? selectedImageIndex;
     String? customImagePath;
+    bool isTemps = true;
+    Duration temps = const Duration(seconds: 30);
+    int repetitions = 10;
+    int series = 3;
+    Duration pauseEntreSeries = const Duration(seconds: 30);
 
     showDialog(
       context: context,
@@ -110,16 +114,18 @@ class ExercicesScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     const Text('Sélectionnez une image :'),
-                    SizedBox(
+                    Container(
                       height: 200,
                       width: 200,
                       child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 4,
                           mainAxisSpacing: 4,
                         ),
                         itemCount: 9,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
@@ -135,7 +141,10 @@ class ExercicesScreen extends StatelessWidget {
                                   width: 2,
                                 ),
                               ),
-                              child: Image.asset('assets/images/exercise${index + 1}.webp'),
+                              child: Image.asset(
+                                'assets/images/exercise${index + 1}.webp',
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           );
                         },
@@ -164,6 +173,80 @@ class ExercicesScreen extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                       ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        const Text('Type: '),
+                        ChoiceChip(
+                          label: const Text('Temps'),
+                          selected: isTemps,
+                          onSelected: (bool selected) {
+                            setState(() {
+                              isTemps = selected;
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        ChoiceChip(
+                          label: const Text('Répétitions'),
+                          selected: !isTemps,
+                          onSelected: (bool selected) {
+                            setState(() {
+                              isTemps = !selected;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    if (isTemps)
+                      Text('Temps: ${temps.inSeconds} secondes')
+                    else
+                      Text('Répétitions: $repetitions'),
+                    Slider(
+                      value: isTemps ? temps.inSeconds.toDouble() : repetitions.toDouble(),
+                      min: 1,
+                      max: isTemps ? 300 : 100,
+                      divisions: isTemps ? 60 : 99,
+                      label: isTemps ? temps.inSeconds.toString() : repetitions.toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          if (isTemps) {
+                            temps = Duration(seconds: value.round());
+                          } else {
+                            repetitions = value.round();
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Text('Nombre de séries: $series'),
+                    Slider(
+                      value: series.toDouble(),
+                      min: 1,
+                      max: 10,
+                      divisions: 9,
+                      label: series.toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          series = value.round();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Text('Pause entre séries: ${pauseEntreSeries.inSeconds} secondes'),
+                    Slider(
+                      value: pauseEntreSeries.inSeconds.toDouble(),
+                      min: 0,
+                      max: 300,
+                      divisions: 60,
+                      label: pauseEntreSeries.inSeconds.toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          pauseEntreSeries = Duration(seconds: value.round());
+                        });
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -179,7 +262,12 @@ class ExercicesScreen extends StatelessWidget {
                       final newExercice = Exercice(
                         name: name, 
                         imageIndex: selectedImageIndex, 
-                        customImagePath: customImagePath
+                        customImagePath: customImagePath,
+                        isTemps: isTemps,
+                        temps: isTemps ? temps : null,
+                        repetitions: isTemps ? null : repetitions,
+                        series: series,
+                        pauseEntreSeries: pauseEntreSeries,
                       );
                       Provider.of<ExercicesProvider>(context, listen: false).addExercice(newExercice);
                       Navigator.of(context).pop();
