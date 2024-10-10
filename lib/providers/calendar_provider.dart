@@ -16,6 +16,11 @@ class CalendarProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeFutureEvents(CalendarEvent event) {
+    _events.removeWhere((e) => e.seance == event.seance && (e.date.isAfter(event.date) || isSameDay(e.date, event.date)));
+    notifyListeners();
+  }
+
   List<CalendarEvent> getEventsForDay(DateTime day) {
     return _events.where((event) => isSameDay(event.date, day)).toList();
   }
