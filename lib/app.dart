@@ -8,7 +8,9 @@ import 'package:sport/config/custom_themes.dart';
 import 'package:sport/screens/setting_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/exercices_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/seances_screen.dart';
+
 class ThemeProvider with ChangeNotifier {
   ThemeData _currentTheme = CustomThemes.blueTheme;
 
@@ -37,6 +39,15 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
+            localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('fr'), // Ajouter le français
+      ],
+
             debugShowCheckedModeBanner: false,
             theme: themeProvider.currentTheme,
             home: MainScreen(),

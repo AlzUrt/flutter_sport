@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 return TableCalendar(
                   firstDay: DateTime.utc(2000, 1, 1),
                   lastDay: DateTime.utc(2050, 12, 31),
-                  locale: 'fr_FR',
+                  locale: 'fr',
                   startingDayOfWeek: StartingDayOfWeek.monday,
                   focusedDay: _focusedDay,
                   selectedDayPredicate: (day) {
@@ -167,6 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 initialDate: _selectedDate,
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime(2101),
+                                locale: const Locale('fr'),
                               );
                               if (picked != null && picked != _selectedDate) {
                                 setState(() {

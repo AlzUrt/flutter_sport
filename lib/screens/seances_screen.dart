@@ -31,7 +31,6 @@ class SeancesScreen extends StatelessWidget {
       ),
       floatingActionButton:
      CustomButton(
-  // text: 'Ajouter une séance',
   icon: Icons.add,
   width: MediaQuery.of(context).size.width - 32,
   height: 60,
