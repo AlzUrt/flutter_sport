@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class SessionCard extends StatelessWidget {
   final String name;
   final DateTime date;
+  final VoidCallback? onDelete;
 
   const SessionCard({
     Key? key,
     required this.name,
     required this.date,
+    this.onDelete,
   }) : super(key: key);
 
   @override
@@ -48,6 +50,11 @@ class SessionCard extends StatelessWidget {
                           color: Colors.grey[600],
                         ),
                   ),
+                  if (onDelete != null) // Ajout de l'icône de suppression si onDelete est fourni
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: onDelete,
+                    ),
                 ],
               ),
             ],

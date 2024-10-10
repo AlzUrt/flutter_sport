@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  final String text;
-  final double width; 
-  final double height; 
+  final String? text;
+  final IconData? icon;
+  final double width;
+  final double height;
   final VoidCallback onPressed;
 
   CustomButton({
-    required this.text,
+    this.text,
+    this.icon,
     required this.onPressed,
     this.width = 200.0,
     this.height = 50.0,
-  });
+  }) : assert(text != null || icon != null, 'Au moins un texte ou une icône doit être fourni.');
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +24,25 @@ class CustomButton extends StatelessWidget {
       height: height,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor, 
+          backgroundColor: buttonColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
         ),
         onPressed: onPressed,
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 16, color: Colors.white),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, color: Colors.white),
+              if (text != null) const SizedBox(width: 8),
+            ],
+            if (text != null)
+              Text(
+                text!,
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
+          ],
         ),
       ),
     );
