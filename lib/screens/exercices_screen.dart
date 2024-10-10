@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sport/widgets/custom_button.dart';
 import 'dart:io';
 import '../domain/exercice.dart';
 import '../providers/exercices_provider.dart';
@@ -50,10 +51,15 @@ class ExercicesScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddExerciceForm(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: CustomButton(
+  icon: Icons.add,
+  width: MediaQuery.of(context).size.width - 32, // 16 de chaque côté
+  height: 60,
+  onPressed: () {
+    _showAddExerciceForm(context);
+  },
+),
+
     );
   }
 

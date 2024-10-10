@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sport/domain/exercice.dart';
+import 'package:sport/widgets/custom_button.dart';
 import '../providers/seances_provider.dart';
 import '../providers/exercices_provider.dart';
 import '../domain/seance.dart';
@@ -28,10 +29,16 @@ class SeancesScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddSeanceForm(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton:
+     CustomButton(
+  // text: 'Ajouter une séance',
+  icon: Icons.add,
+  width: MediaQuery.of(context).size.width - 32,
+  height: 60,
+  onPressed: () {
+    _showAddSeanceForm(context);
+  },
+),
     );
   }
 
@@ -59,6 +66,7 @@ class SeancesScreen extends StatelessWidget {
                       onChanged: (value) => nom = value,
                     ),
                     const SizedBox(height: 20),
+                     
                     ElevatedButton(
                       onPressed: () => _showAddExercicesToSeanceForm(
                         context, 

@@ -224,23 +224,23 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Supprimer séance'),
-          content: Text('Voulez-vous supprimer uniquement cette séance ou toutes les séances futures ?'),
+          content: const Text('Voulez-vous supprimer uniquement cette séance ou toutes les séances futures ?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Annuler'),
+              child: const Text('Annuler'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Supprimer uniquement'),
+              child: const Text('Supprimer uniquement'),
               onPressed: () {
                 Provider.of<CalendarProvider>(context, listen: false).removeEvent(event);
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Supprimer toutes les séances futures'),
+              child: const Text('Supprimer toutes les séances futures'),
               onPressed: () {
                 Provider.of<CalendarProvider>(context, listen: false).removeFutureEvents(event);
                 Navigator.of(context).pop();
