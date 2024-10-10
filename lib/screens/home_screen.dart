@@ -189,8 +189,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             TableCalendar(
-              firstDay: DateTime.utc(2000, 1, 1),
+              firstDay: DateTime.utc(2024, 1, 1),
               lastDay: DateTime.utc(2050, 12, 31),
+              locale: 'fr_FR',
+              startingDayOfWeek: StartingDayOfWeek.monday,
               focusedDay: _focusedDay,
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);

@@ -9,6 +9,7 @@ import 'screens/home_screen.dart';
 import 'screens/exercices_screen.dart';
 import 'screens/seances_screen.dart';
 import 'screens/profile_screen.dart';
+
 class ThemeProvider with ChangeNotifier {
   ThemeData _currentTheme = CustomThemes.blueTheme;
 
@@ -66,6 +67,7 @@ class MainScreen extends StatelessWidget {
             title: const Text('SportApp'),
           ),
           body: _screens[navigationProvider.currentIndex],
+          
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: navigationProvider.currentIndex,
             onTap: (index) => navigationProvider.setIndex(index),
@@ -75,12 +77,12 @@ class MainScreen extends StatelessWidget {
                 label: 'Planning',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Séance',
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.fitness_center),
                 label: 'Exercices',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.workspace_premium_sharp),
+                label: 'Séances',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
