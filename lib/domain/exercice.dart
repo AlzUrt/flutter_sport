@@ -1,5 +1,5 @@
 class Exercice {
-  int? id;
+  final int? id;
   final String name;
   final int? imageIndex;
   final String? customImagePath;
@@ -51,6 +51,30 @@ class Exercice {
       repetitions: map['repetitions'],
       series: map['series'],
       pauseEntreSeries: Duration(seconds: map['pauseEntreSeries']),
+    );
+  }
+
+  Exercice copyWith({
+    int? id,
+    String? name,
+    int? imageIndex,
+    String? customImagePath,
+    bool? isTemps,
+    Duration? temps,
+    int? repetitions,
+    int? series,
+    Duration? pauseEntreSeries,
+  }) {
+    return Exercice(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      imageIndex: imageIndex ?? this.imageIndex,
+      customImagePath: customImagePath ?? this.customImagePath,
+      isTemps: isTemps ?? this.isTemps,
+      temps: temps ?? this.temps,
+      repetitions: repetitions ?? this.repetitions,
+      series: series ?? this.series,
+      pauseEntreSeries: pauseEntreSeries ?? this.pauseEntreSeries,
     );
   }
 

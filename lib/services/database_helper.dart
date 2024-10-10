@@ -83,25 +83,4 @@ class DatabaseHelper {
       )
     ''');
   }
-
-  Future<int> insertExercice(Map<String, dynamic> row) async {
-    Database db = await database;
-    return await db.insert('Exercise', row);
-  }
-
-  Future<List<Map<String, dynamic>>> getExercices() async {
-    Database db = await database;
-    return await db.query('Exercise');
-  }
-
-  Future<int> updateExercice(Map<String, dynamic> row) async {
-    Database db = await database;
-    int id = row['id'];
-    return await db.update('Exercise', row, where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<int> deleteExercice(int id) async {
-    Database db = await database;
-    return await db.delete('Exercise', where: 'id = ?', whereArgs: [id]);
-  }
 }
