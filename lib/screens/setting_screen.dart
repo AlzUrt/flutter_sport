@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sport/app.dart';
 import 'package:sport/config/custom_themes.dart';
-import 'package:sport/widgets/custom_button.dart';
-import 'package:sport/widgets/session_card.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});

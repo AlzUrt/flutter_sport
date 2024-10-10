@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Providers/navigation_provider.dart';
 import 'providers/seances_provider.dart';
+import 'providers/calendar_provider.dart';
 import 'providers/exercices_provider.dart';
 import 'package:sport/config/custom_themes.dart';
 import 'package:sport/screens/setting_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/exercices_screen.dart';
 import 'screens/seances_screen.dart';
-import 'screens/profile_screen.dart';
-
 class ThemeProvider with ChangeNotifier {
   ThemeData _currentTheme = CustomThemes.blueTheme;
 
@@ -33,6 +32,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ExercicesProvider()),
         ChangeNotifierProvider(create: (context) => SeancesProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => CalendarProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
