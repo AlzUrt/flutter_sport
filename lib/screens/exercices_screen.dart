@@ -14,9 +14,7 @@ class ExercicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercices'),
-      ),
+
       body: Consumer<ExercicesProvider>(
         builder: (context, exercicesProvider, child) {
           return ListView.builder(

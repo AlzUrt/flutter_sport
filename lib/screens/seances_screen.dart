@@ -12,9 +12,6 @@ class SeancesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Séances'),
-      ),
       body: Consumer<SeancesProvider>(
         builder: (context, seancesProvider, child) {
           return ListView.builder(
