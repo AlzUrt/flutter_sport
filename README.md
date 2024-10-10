@@ -10,3 +10,13 @@ start project
 ```
 flutter run
 ```
+
+## hot reload
+
+To see the changes, do hot realod by pressing "r" in the console
+
+## get packages
+
+```
+flutter pub get
+```
