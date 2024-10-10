@@ -9,6 +9,7 @@ import 'package:sport/screens/setting_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/exercices_screen.dart';
 import 'screens/seances_screen.dart';
+
 class ThemeProvider with ChangeNotifier {
   ThemeData _currentTheme = CustomThemes.blueTheme;
 
