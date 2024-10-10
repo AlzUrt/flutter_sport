@@ -132,7 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (selectedSession != null) {
                   setState(() {
                     if (isRecurring && selectedWeekday != null) {
-                      // Ajouter un événement récurrent
                       for (int i = 0; i < 365; i++) {
                         DateTime potentialDate = DateTime.now().add(Duration(days: i));
                         if (_getWeekdayName(potentialDate) == selectedWeekday) {
@@ -143,14 +142,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
                       }
                     } else if (selectedDate != null) {
-                      // Ajouter un événement ponctuel
                       DateTime eventDate = DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day);
                       if (_events[eventDate] == null) {
                         _events[eventDate] = [];
                       }
                       _events[eventDate]?.add(selectedSession!);
                     }
-                    // Mise à jour de l'état pour forcer la mise à jour du calendrier
                     _focusedDay = DateTime.now();
                   });
                   Navigator.of(context).pop();
