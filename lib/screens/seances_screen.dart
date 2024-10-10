@@ -4,10 +4,8 @@ import 'package:sport/domain/exercice.dart';
 import '../providers/seances_provider.dart';
 import '../providers/exercices_provider.dart';
 import '../domain/seance.dart';
-
 class SeancesScreen extends StatelessWidget {
   const SeancesScreen({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +42,7 @@ class SeancesScreen extends StatelessWidget {
     final exercicesProvider = Provider.of<ExercicesProvider>(context, listen: false);
     
     String nom = '';
-    List<ExerciceSeance> exercicesSeance = [];
-    Duration pauseEntreSeries = Duration.zero;
+    List<Exercice> selectedExercices = [];
     Duration pauseEntreExercices = Duration.zero;
     SeanceType type = SeanceType.AMRAP;
 
@@ -66,15 +63,20 @@ class SeancesScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () => _showAddExerciceToSeanceForm(context, exercicesProvider, (newExerciceSeance) {
-                        setState(() {
-                          exercicesSeance.add(newExerciceSeance);
-                        });
-                      }),
-                      child: const Text('Ajouter un exercice'),
+                      onPressed: () => _showAddExercicesToSeanceForm(
+                        context, 
+                        exercicesProvider, 
+                        selectedExercices,
+                        (updatedExercices) {
+                          setState(() {
+                            selectedExercices = updatedExercices;
+                          });
+                        }
+                      ),
+                      child: const Text('Gérer les exercices'),
                     ),
                     const SizedBox(height: 10),
-                    Text('Exercices ajoutés: ${exercicesSeance.length}'),
+                    Text('Exercices ajoutés: ${selectedExercices.length}'),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<SeanceType>(
                       value: type,
@@ -89,20 +91,6 @@ class SeancesScreen extends StatelessWidget {
                           child: Text(seanceType.toString().split('.').last),
                         );
                       }).toList(),
-                    ),
-                    const SizedBox(height: 20),
-                    Text('Pause entre séries: ${pauseEntreSeries.inSeconds} secondes'),
-                    Slider(
-                      value: pauseEntreSeries.inSeconds.toDouble(),
-                      min: 0,
-                      max: 300,
-                      divisions: 60,
-                      label: pauseEntreSeries.inSeconds.toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          pauseEntreSeries = Duration(seconds: value.round());
-                        });
-                      },
                     ),
                     const SizedBox(height: 20),
                     Text('Pause entre exercices: ${pauseEntreExercices.inSeconds} secondes'),
@@ -129,12 +117,10 @@ class SeancesScreen extends StatelessWidget {
                 TextButton(
                   child: const Text('Créer'),
                   onPressed: () {
-                    if (nom.isNotEmpty && exercicesSeance.isNotEmpty) {
+                    if (nom.isNotEmpty && selectedExercices.isNotEmpty) {
                       final newSeance = Seance(
                         nom: nom,
-                        exercices: exercicesSeance,
-                        pauseEntreSeries: pauseEntreSeries,
-                        pauseEntreExercices: pauseEntreExercices,
+                        exercices: selectedExercices,
                         type: type,
                       );
                       Provider.of<SeancesProvider>(context, listen: false).addSeance(newSeance);
@@ -150,97 +136,84 @@ class SeancesScreen extends StatelessWidget {
     );
   }
 
-  void _showAddExerciceToSeanceForm(BuildContext context, ExercicesProvider exercicesProvider, Function(ExerciceSeance) onAdd) {
-    Exercice? selectedExercice;
-    bool isTemps = true;
-    int repetitions = 1;
-    Duration temps = const Duration(seconds: 30);
-    int series = 1;
+void _showAddExercicesToSeanceForm(
+    BuildContext context, 
+    ExercicesProvider exercicesProvider, 
+    List<Exercice> initialSelectedExercices,
+    Function(List<Exercice>) onUpdate
+  ) {
+    List<Exercice> selectedExercices = List.from(initialSelectedExercices);
 
-    showDialog(
+     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Ajouter un exercice à la séance'),
-              content: SingleChildScrollView(
+              title: const Text('Gérer les exercices de la séance'),
+              content: Container(
+                width: double.maxFinite,
+                height: 400,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    DropdownButtonFormField<Exercice>(
-                      value: selectedExercice,
-                      onChanged: (Exercice? newValue) {
-                        setState(() {
-                          selectedExercice = newValue;
-                        });
-                      },
-                      items: exercicesProvider.exercices.map((Exercice exercice) {
-                        return DropdownMenuItem<Exercice>(
-                          value: exercice,
-                          child: Text(exercice.name),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        const Text('Type: '),
-                        ChoiceChip(
-                          label: const Text('Temps'),
-                          selected: isTemps,
-                          onSelected: (bool selected) {
+                    Expanded(
+                      child: ListView(
+                        children: exercicesProvider.exercices.map((exercice) => CheckboxListTile(
+                          title: Text(exercice.name),
+                          value: selectedExercices.contains(exercice),
+                          onChanged: (bool? value) {
                             setState(() {
-                              isTemps = selected;
+                              if (value == true) {
+                                if (!selectedExercices.contains(exercice)) {
+                                  selectedExercices.add(exercice);
+                                }
+                              } else {
+                                selectedExercices.remove(exercice);
+                              }
                             });
                           },
-                        ),
-                        const SizedBox(width: 10),
-                        ChoiceChip(
-                          label: const Text('Répétitions'),
-                          selected: !isTemps,
-                          onSelected: (bool selected) {
-                            setState(() {
-                              isTemps = !selected;
-                            });
-                          },
-                        ),
-                      ],
+                        )).toList(),
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    if (isTemps)
-                      Text('Temps: ${temps.inSeconds} secondes')
-                    else
-                      Text('Répétitions: $repetitions'),
-                    Slider(
-                      value: isTemps ? temps.inSeconds.toDouble() : repetitions.toDouble(),
-                      min: 1,
-                      max: isTemps ? 300 : 100,
-                      divisions: isTemps ? 60 : 99,
-                      label: isTemps ? temps.inSeconds.toString() : repetitions.toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          if (isTemps) {
-                            temps = Duration(seconds: value.round());
-                          } else {
-                            repetitions = value.round();
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Text('Nombre de séries: $series'),
-                    Slider(
-                      value: series.toDouble(),
-                      min: 1,
-                      max: 10,
-                      divisions: 9,
-                      label: series.toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          series = value.round();
-                        });
-                      },
+                    const Divider(),
+                    const Text('Exercices sélectionnés (glisser "=" pour réordonner):'),
+                    Expanded(
+                      child: ReorderableListView.builder(
+                        itemCount: selectedExercices.length,
+                        itemBuilder: (context, index) {
+                          final exercice = selectedExercices[index];
+                          return Card(
+                            key: ValueKey(exercice),
+                            child: ListTile(
+                              title: Text(exercice.name),
+                              trailing: ReorderableDragStartListener(
+                                index: index,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onPanUpdate: (details) {
+                                    // Cette fonction sera appelée lors du glissement
+                                  },
+                                  child: Container(
+                                    width: 60,
+                                    height: 60,
+                                    alignment: Alignment.center,
+                                    child: const Icon(Icons.drag_handle),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        onReorder: (int oldIndex, int newIndex) {
+                          setState(() {
+                            if (oldIndex < newIndex) {
+                              newIndex -= 1;
+                            }
+                            final Exercice item = selectedExercices.removeAt(oldIndex);
+                            selectedExercices.insert(newIndex, item);
+                          });
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -251,18 +224,10 @@ class SeancesScreen extends StatelessWidget {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 TextButton(
-                  child: const Text('Ajouter'),
+                  child: const Text('Valider'),
                   onPressed: () {
-                    if (selectedExercice != null) {
-                      final newExerciceSeance = ExerciceSeance(
-                        exercice: selectedExercice!,
-                        temps: isTemps ? temps : null,
-                        repetitions: isTemps ? null : repetitions,
-                        series: series,
-                      );
-                      onAdd(newExerciceSeance);
-                      Navigator.of(context).pop();
-                    }
+                    onUpdate(selectedExercices);
+                    Navigator.of(context).pop();
                   },
                 ),
               ],
